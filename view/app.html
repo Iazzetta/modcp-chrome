@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html ng-app="4UPApp">
+<head>
+	<meta charset="UTF-8">
+	<script src="/js/angular.min.js"></script>
+	<script src="/controller/main.controller.js"></script>
+	<script src="/js/ng-clip.js"></script>
+	<title>4U Painel</title>
+	<link href="/css/apps.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+
+	<div class="container" ng-controller="MainController">
+		<div class="centered">
+			<img src="/media/logo.png" alt="Logo 4U" />
+			<p class="desc-text">Painel simples do fórum 4U Cheats. Aqui você pode selecionar o tipo de mensagem que 
+			gostaria de copiar para seu clipboard (ctrl + c). Basta clicar em algum item abaixo e colar (ctrl + v) no campo de postagem.</p>
+		</div>
+
+		<div class="painel" ng-repeat="m in listMessages">
+		    <div class="heading-p" ng-clip="m.content">
+		    	{{m.label}}
+		    </div>
+		</div>
+	</div>
+</body>
+</html>

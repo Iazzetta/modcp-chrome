@@ -1,0 +1,29 @@
+{
+  "manifest_version": 2,
+
+  "name": "4U Painel",
+  "description": "Extensão criada para a STAFF do forum 4U Cheats.",
+  "version": "1.0",
+
+  "browser_action": {
+    "default_icon": {
+      "19": "/media/icon16.png",
+      "38": "/media/icon48.png",
+      "64": "/media/icon64.png"
+   },
+    "default_popup": "/view/app.html",
+    "default_title": "4U Painel"
+  },
+  "permissions": [
+    "activeTab",
+    "https://ajax.googleapis.com/",
+    "http://*/*", 
+    "https://*/*", 
+    "unlimitedStorage", 
+    "contextMenus", 
+    "cookies", 
+    "tabs", 
+    "notifications"
+  ]
+
+}
