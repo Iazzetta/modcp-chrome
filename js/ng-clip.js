@@ -1,92 +1,57 @@
-/*jslint node: true */
-/*global ZeroClipboard */
+angular.module('angular-clipboard', [])
+    .directive('clipboard', ['$document', function ($document) {
+        return {
+            restrict: 'A',
+            scope: {
+                onCopied: '&',
+                onError: '&',
+                text: '='
+            },
+            link: function (scope, element) {
+                function createNode(text) {
+                    var node = $document[0].createElement('textarea');
+                    node.style.position = 'absolute';
+                    node.style.left = '-10000px';
+                    node.textContent = text;
+                    return node;
+                }
 
-(function(window, angular, undefined) {
-  'use strict';
+                function copyNode(node) {
+                    // Set inline style to override css styles
+                    $document[0].body.style.webkitUserSelect = 'initial';
 
-  angular.module('ngClipboard', []).
-    provider('ngClip', function() {
-      var self = this;
-      this.path = '//cdnjs.cloudflare.com/ajax/libs/zeroclipboard/2.1.6/ZeroClipboard.swf';
-      return {
-        setPath: function(newPath) {
-          self.path = newPath;
-        },
-        setConfig: function(config) {
-          self.config = config;
-        },
-        $get: function() {
-          return {
-            path: self.path,
-            config: self.config
-          };
-        }
-      };
-    }).
-    run(['ngClip', function(ngClip) {
-      var config = {
-        swfPath: ngClip.path,
-        trustedDomains: ["*"],
-        allowScriptAccess: "always",
-        forceHandCursor: true,
-      };
-      ZeroClipboard.config(angular.extend(config,ngClip.config || {}));
-    }]).
-    directive('clipCopy', ['ngClip', function (ngClip) {
-      return {
-        scope: {
-          clipCopy: '&',
-          clipClick: '&',
-          clipClickFallback: '&',
-          autoHideOnNoFlash: '='
-        },
-        restrict: 'A',
-        link: function (scope, element, attrs) {
-          if (ZeroClipboard.isFlashUnusable()) {
-            // hide button copy when flash is unavailable
-            if(!!scope.autoHideOnNoFlash) {
-              element.hide();
-              return;
+                    var selection = $document[0].getSelection();
+                    selection.removeAllRanges();
+                    node.select();
+
+                    if(!$document[0].execCommand('copy')) {
+                      throw('failure copy');
+                    }
+                    selection.removeAllRanges();
+
+                    // Reset inline style
+                    $document[0].body.style.webkitUserSelect = '';
+                }
+
+                function copyText(text) {
+                    var node = createNode(text);
+                    $document[0].body.appendChild(node);
+                    copyNode(node);
+                    $document[0].body.removeChild(node);
+                }
+
+                element.on('click', function (event) {
+                    try {
+                        copyText(scope.text);
+                        if (angular.isFunction(scope.onCopied)) {
+                            scope.$evalAsync(scope.onCopied());
+                        }
+                    } catch (err) {
+                        if (angular.isFunction(scope.onError)) {
+                            scope.$evalAsync(scope.onError({err: err}));
+                        }
+                    }
+                });
             }
-
-            // Bind a fallback function if flash is unavailable
-            element.bind('click', function($event) {
-              // Execute the expression with local variables `$event` and `copy`
-              scope.$apply(scope.clipClickFallback({
-                $event: $event,
-                copy: scope.$eval(scope.clipCopy)
-              }));
-            });
-
-            return;
-          }
-
-          // Create the client object
-          var client = new ZeroClipboard(element);
-          if (attrs.clipCopy === "") {
-            scope.clipCopy = function(scope) {
-              return element[0].previousElementSibling.innerText;
-            };
-          }
-          client.on( 'ready', function(readyEvent) {
-
-            client.on('copy', function (event) {
-              var clipboard = event.clipboardData;
-              clipboard.setData(attrs.clipCopyMimeType || 'text/plain', scope.$eval(scope.clipCopy));
-            });
-
-            client.on( 'aftercopy', function(event) {
-              if (angular.isDefined(attrs.clipClick)) {
-                scope.$apply(scope.clipClick);
-              }
-              element.blur();
-            });
-
-            scope.$on('$destroy', function() {
-              client.destroy();
-            });
-          });
-        }
-      };
+        };
     }]);
-})(window, window.angular);

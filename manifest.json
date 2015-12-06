@@ -23,7 +23,10 @@
     "contextMenus", 
     "cookies", 
     "tabs", 
-    "notifications"
+    "notifications",
+    "clipboardWrite",
+    "clipboardRead",
+    "storage"
   ]
 
 }

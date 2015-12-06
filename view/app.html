@@ -1,27 +1,36 @@
 <!DOCTYPE html>
-<html ng-app="4UPApp">
+<html ng-app="ModCpApp">
 <head>
 	<meta charset="UTF-8">
 	<script src="/js/angular.min.js"></script>
 	<script src="/controller/main.controller.js"></script>
 	<script src="/js/ng-clip.js"></script>
-	<title>4U Painel</title>
+	<title>Modcp Chrome</title>
 	<link href="/css/apps.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 
 	<div class="container" ng-controller="MainController">
 		<div class="centered">
-			<img src="/media/logo.png" alt="Logo 4U" />
-			<p class="desc-text">Painel simples do fórum 4U Cheats. Aqui você pode selecionar o tipo de mensagem que 
-			gostaria de copiar para seu clipboard (ctrl + c). Basta clicar em algum item abaixo e colar (ctrl + v) no campo de postagem.</p>
+			<img src="/media/logo.png" alt="Logo ModCP-Chrome" />
+			<p class="desc-text">A simple moderativo panel where you add the messages the way you want and available to your forum moderators. <a class="mcp-link" href="#">See the documentation</a>.</p>
 		</div>
 
-		<div class="painel" ng-repeat="m in listMessages">
-		    <div class="heading-p" ng-clip="m.content">
+		<p class="desc-text">URL of messages (.json):</a>.</p>
+		<div class="get-messages">
+			<input type="text" class="mcp-text" id="url_content" placeholder="https://www.example.com/messages/msg.json" ng-model="get_url.content" ng-change="setUrlMessages(get_url.content)">
+			<div id="status_content"></div>
+			<button class="mcp-button" id="save_url" ng-click="setUrlMessages(get_url.content)">GET</button>
+		</div>
+
+		<div ng-if="m" class="painel" ng-repeat="m in listMessages" clipboard text="m.content" on-copied="success()" on-error="fail(err)">
+		    <div class="heading-p">
 		    	{{m.label}}
 		    </div>
+		    <input type="hidden" ng-model="m.content">
 		</div>
+
 	</div>
+	<script src="/js/options.js"></script>
 </body>
 </html>
